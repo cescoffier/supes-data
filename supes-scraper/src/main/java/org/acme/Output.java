@@ -16,6 +16,8 @@ import java.util.List;
 @ApplicationScoped
 public class Output {
 
+    private static final String REPO_ROOT = "https://github.com/cescoffier/supes-data/raw/master/characters";
+
     private static final String IMPORT_LINES = """
             INSERT INTO %s(id, name, otherName, picture, powers, level)
             VALUES (nextval('hibernate_sequence'), '%s', '%s', '%s', '%s', %d);
@@ -34,11 +36,13 @@ public class Output {
         List<OutputCharacter> villains = new ArrayList<>();
         for (Character character : characters) {
             if (character.isHero()) {
-                importHeroes.append(IMPORT_LINES.formatted("hero", character.name, character.otherName, character.picture,
+                importHeroes.append(IMPORT_LINES.formatted("hero", character.name, character.otherName,
+                        REPO_ROOT + "/" + character.picture,
                         String.join("", character.powers), character.level));
                 heroes.add(new OutputCharacter(character));
             } else {
-                importVillains.append(IMPORT_LINES.formatted("villain", character.name, character.otherName, character.picture,
+                importVillains.append(IMPORT_LINES.formatted("villain", character.name, character.otherName,
+                        REPO_ROOT + "/" + character.picture,
                         String.join("", character.powers), character.level));
                 villains.add(new OutputCharacter(character));
             }
@@ -84,7 +88,7 @@ public class Output {
             this.name = character.name;
             this.otherName = character.otherName;
             this.level = character.level;
-            this.picture = character.picture;
+            this.picture = REPO_ROOT + "/" + character.picture;
             this.powers = character.powers;
         }
     }
